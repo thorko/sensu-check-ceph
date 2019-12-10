@@ -4,13 +4,19 @@ import json
 import subprocess
 import argparse
 import time
+import sys
 
 def main():
 	parser = argparse.ArgumentParser(description='get metrics of ceph')
 	parser.add_argument('-e', type=str, dest='env', required=False, help='the environment name', default='prod')
+	parser.add_argument('-n', type=str, dest='name', required=True, help='the client name for auth', default='client.status')
+	parser.add_argument('-k', type=str, dest='keyring', required=False, help='the client keyring file')
 	args = parser.parse_args()
 
-	j = subprocess.check_output(['/usr/bin/ceph', 'status', '--format=json']).replace('\n', '')
+	if args.keyring:
+		j = subprocess.check_output(['/usr/bin/ceph', '--name', args.name, '--keyring', args.keyring, 'status', '--format=json']).replace('\n', '')
+	else:
+		j = subprocess.check_output(['/usr/bin/ceph', '--name', args.name, 'status', '--format=json']).replace('\n', '')
 	l = json.loads(j)
 	ts = int(time.time())
 	print("ceph.{:s}.data_bytes {:d} {:d}".format(args.env, l.get('pgmap').get('data_bytes',0), ts))
