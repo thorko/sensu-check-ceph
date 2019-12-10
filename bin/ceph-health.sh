@@ -1,7 +1,30 @@
 #!/bin/bash
 
 ceph=$(which ceph)
-status=$($ceph health)
+
+while getopts "k:n:" opt; do
+  case "$opt" in
+    k)
+			key=$OPTARG
+			;;
+		n)
+			name=$OPTARG
+			;;
+  esac
+done
+
+if [ -z $name ]; then
+	echo "Usage: $0 -n <name for auth> [-k keyring to be used]"
+	exit 0
+fi
+
+if [ ! -z $key ]; then
+	opts="--name $name --keyring $key"
+else
+	opts="--name $name"
+fi
+
+status=$($ceph $opts health)
 if [[ $status =~ HEALTH_OK ]]; then
   echo $status
 	exit 0
