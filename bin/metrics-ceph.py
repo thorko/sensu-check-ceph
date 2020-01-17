@@ -11,6 +11,8 @@ def main():
 	parser.add_argument('-e', type=str, dest='env', required=False, help='the environment name', default='prod')
 	parser.add_argument('-n', type=str, dest='name', required=True, help='the client name for auth', default='client.status')
 	parser.add_argument('-k', type=str, dest='keyring', required=False, help='the client keyring file')
+	parser.add_argument('-w', type=int, dest='warn', required=False, help='warning when below bytes')
+	parser.add_argument('-c', type=int, dest='critical', required=False, help='critical when below bytes')
 	args = parser.parse_args()
 
 	if args.keyring:
@@ -27,6 +29,12 @@ def main():
 	print("ceph.{:s}.write_bytes_sec {:d} {:d}".format(args.env, l.get('pgmap').get('write_bytes_sec',0), ts))
 	print("ceph.{:s}.read_op_per_sec {:d} {:d}".format(args.env, l.get('pgmap').get('read_op_per_sec',0), ts))
 	print("ceph.{:s}.write_op_per_sec {:d} {:d}".format(args.env, l.get('pgmap').get('write_op_per_sec',0), ts))
+
+	avail = l.get('pgmap').get('bytes_avail',0)
+	if avail <= args.critical:
+		sys.exit(2)
+	if avail <= args.warn:
+		sys.exit(1)
 
 if __name__ == '__main__':
 	main()
