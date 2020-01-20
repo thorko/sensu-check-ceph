@@ -15,7 +15,7 @@ done
 
 if [ -z $name ]; then
 	echo "Usage: $0 -n <name for auth> [-k keyring to be used]"
-	exit 0
+	exit 3
 fi
 
 if [ ! -z $key ]; then
