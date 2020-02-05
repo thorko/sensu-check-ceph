@@ -28,6 +28,9 @@ status=$($ceph $opts health)
 if [[ $status =~ HEALTH_OK ]]; then
   echo $status
 	exit 0
+elif [[ $status =~ HEALTH_WARN ]]; then
+  echo $status
+	exit 1
 else
   echo $status
 	exit 2
