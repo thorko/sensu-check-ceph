@@ -3,14 +3,14 @@
 ceph=$(which ceph)
 
 while getopts "k:n:" opt; do
-  case "$opt" in
-    k)
-			key=$OPTARG
-			;;
-		n)
-			name=$OPTARG
-			;;
-  esac
+	case "$opt" in
+	k)
+		key=$OPTARG
+		;;
+	n)
+		name=$OPTARG
+		;;
+	esac
 done
 
 if [ -z $name ]; then
@@ -24,11 +24,10 @@ else
 	opts="--name $name"
 fi
 
-status=$($ceph $opts health)
+status=$($ceph $opts health detail)
+echo "$status"
 if [[ $status =~ HEALTH_OK ]]; then
-  echo $status
 	exit 0
 else
-  echo $status
 	exit 2
 fi
